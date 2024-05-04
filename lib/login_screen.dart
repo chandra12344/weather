@@ -3,7 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:lottie/lottie.dart';
-
+import 'package:shared_preferences/shared_preferences.dart';
 import 'home_screen.dart';
 
 class LoginScreen extends StatefulWidget {
@@ -25,18 +25,19 @@ class _LoginScreenState extends State<LoginScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: SingleChildScrollView(
-        child: Container(
-          padding: const EdgeInsets.all(20),
-          height: MediaQuery.of(context).size.height,
-          width: MediaQuery.of(context).size.width,
-          color: Colors.blue[50]?.withOpacity(0.1),
-          child:Form(
-            key: _formKey,
+      body: Container(
+        padding: const EdgeInsets.all(20),
+        height: MediaQuery.of(context).size.height,
+        width: MediaQuery.of(context).size.width,
+        color: Colors.blue[50]?.withOpacity(0.1),
+        child:Form(
+          key: _formKey,
+          child: SingleChildScrollView(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
+                SizedBox(height: 100,),
                 Center(child: Lottie.asset('assets/lottie/login.json',height: 160,width: 160,fit: BoxFit.cover,)),
                const SizedBox(height: 10,),
                  Center(
@@ -138,13 +139,15 @@ class _LoginScreenState extends State<LoginScreen> {
                     borderRadius: BorderRadius.circular(10)
                   ),
                   child: TextButton(
-                    onPressed: () {
+                    onPressed: () async{
                       if (_formKey.currentState!.validate()) {
                         if(username.text!="admin"){
                           showError(context, "Please Enter valid username");
                         }else if(password.text!="admin@123"){
                           showError(context, "Please Enter valid password");
-                        }else{
+                        }else {
+                          SharedPreferences prefs = await SharedPreferences.getInstance();
+                          prefs.setBool("isLogin", true);
                          Get.to(const HomeScreen());
                         }
                       }
@@ -161,8 +164,8 @@ class _LoginScreenState extends State<LoginScreen> {
                 ),
               ],
             ),
-          )
-        ),
+          ),
+        )
       ),
     );
   }

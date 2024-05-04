@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -15,8 +17,9 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   WeatherController controller=Get.put(WeatherController());
-
+  late Timer _timer;
    var locationName='';
+   var _currentTime='';
 
 
 
@@ -35,6 +38,7 @@ class _HomeScreenState extends State<HomeScreen> {
   void initState() {
     // TODO: implement initState
     super.initState();
+    _timer = Timer.periodic(Duration(microseconds: 1), _updateTime);
     getLocation();
     controller.getWeatherData();
   }
@@ -52,15 +56,46 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   @override
+  void dispose() {
+    _timer.cancel(); // Cancel the timer when the widget is disposed
+    super.dispose();
+  }
+
+  void _updateTime(Timer timer) {
+    setState(() {
+      _currentTime = _getCurrentTime();
+    });
+  }
+
+  String _getCurrentTime() {
+    return DateFormat('hh:mm:ss a').format(DateTime.now());
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
+backgroundColor:  Color(0xFF47BFDF),
+      appBar: AppBar(
+        automaticallyImplyLeading: false,
+        title: Text("${DateFormat('dd MMMM yyyy').format(DateTime.now())}",
+        style: GoogleFonts.cabin(textStyle: const TextStyle(color: Colors.white,
+            fontWeight: FontWeight.bold,fontSize: 16)),),
+       backgroundColor:  Color(0xFF4A91FF),
+      elevation: 10,
+      actions: [
+        Text("$_currentTime",
+          style: GoogleFonts.cabin(textStyle: const TextStyle(color: Colors.white,
+              fontWeight: FontWeight.bold,fontSize: 16)),),
+        SizedBox(width: 20,)
+      ],),
       body: Obx(
         ()=> Stack(
           children: [
             Container(
+              height: MediaQuery.of(context).size.height,
+              width: MediaQuery.of(context).size.width,
               padding: const EdgeInsets.all(20),
               decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(13.9071),
                 gradient: const LinearGradient(
                   begin: Alignment.topCenter,
                   end: Alignment.bottomCenter,

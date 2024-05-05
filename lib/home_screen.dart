@@ -8,6 +8,7 @@ import 'package:lottie/lottie.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:geocoding/geocoding.dart';
 import 'package:weather/controller/weather_controller.dart';
+import 'forecast_screen.dart';
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
 
@@ -38,15 +39,19 @@ class _HomeScreenState extends State<HomeScreen> {
   void initState() {
     // TODO: implement initState
     super.initState();
+    controller.isLoading.value=true;
     _timer = Timer.periodic(Duration(microseconds: 1), _updateTime);
     getLocation();
-    controller.getWeatherData();
+    Timer(Duration(seconds: 5), () {
+      controller.isLoading.value=false;
+    });
+
   }
   getLocation()async{
     getUserCurrentLocation().then((value) async {
       List<Placemark> list = await placemarkFromCoordinates(value.latitude, value.longitude);
      print("lat ${value.latitude} log ${value.longitude}");
-
+      controller.getWeatherData(value.latitude,value.longitude,DateTime.now(),"1");
       print(list[0]);
       locationName=list[0].locality!;
       setState(() {
@@ -208,7 +213,9 @@ backgroundColor:  Color(0xFF47BFDF),
                         ],
                         borderRadius: BorderRadius.circular(18.5429), // Border radius
                       ),
-                    child: TextButton(onPressed: (){},child: Text("Forecast report",style: GoogleFonts.raleway(textStyle: const TextStyle(color: Colors.blue,fontSize: 16,fontWeight: FontWeight.bold)),),),
+                    child: TextButton(onPressed: (){
+                      Get.to(ForecastScreen());
+                    },child: Text("Forecast report",style: GoogleFonts.raleway(textStyle: const TextStyle(color: Colors.blue,fontSize: 16,fontWeight: FontWeight.bold)),),),
                     ),
                   ),
                 ],

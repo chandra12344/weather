@@ -148,7 +148,7 @@ class _LoginScreenState extends State<LoginScreen> {
                         }else {
                           SharedPreferences prefs = await SharedPreferences.getInstance();
                           prefs.setBool("isLogin", true);
-                         Get.to(const HomeScreen());
+                         Get.off(const HomeScreen());
                         }
                       }
                     },
